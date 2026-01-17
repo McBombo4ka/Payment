@@ -86,7 +86,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  void _submitPayment() {
+  Future<bool> _submitPayment() async {
     if (_formKey.currentState!.validate()) {
       final cardNumber = _cardNumberController.text.replaceAll(' ', '');
       final expiry = _expiryController.text;
@@ -100,6 +100,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
           cvv: cvv,
         ),
       );
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -338,15 +341,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         onPressed: isProcessing
                             ? null
                             : () async {
-                                _submitPayment();
-                                showSuccessDialog(context);
-                                await Future.delayed(Duration(seconds: 2));
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const HomeScreen(),
-                                  ),
-                                );
+                                 bool success = await _submitPayment();
+                                if (success) {
+                                  showSuccessDialog(context);
+                                  await Future.delayed(Duration(seconds: 2));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => HomeScreen(),
+                                    ),
+                                  );
                               },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
